@@ -33,7 +33,7 @@ contract SampleCrowdsaleToken is ERC20Mintable {
  * to ensure that subcontracts works together as intended.
  */
 
-contract SampleCrowdsale is CappedCrowdsale, MintedCrowdsale {
+contract EchCrowdsale is CappedCrowdsale, MintedCrowdsale {
 
   constructor(
     uint256 rate,

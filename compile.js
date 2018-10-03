@@ -12,7 +12,7 @@ console.log(tokenPath);
 
 const source = fs.readFileSync(tokenPath, 'utf8');
 console.log(source);
-const output = solc.compile(source, 1).contracts;
+//const output = solc.compile(source, 1).contracts;
 module.exports = solc.compile(source, 1).contracts[':Echtoken'];
 console.log(output);
 /*
