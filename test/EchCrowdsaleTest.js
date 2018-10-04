@@ -26,15 +26,15 @@ const tokenInterface = sourceToken.abi;
 //const tokenBytecode = web3.utils.toHex(JSON.stringify(sourceToken.bytecode));
 const tokenBytecode = sourceToken.bytecode;
 
-console.log(web3.utils.isHex(tokenBytecode));
-console.log(tokenBytecode);
+//console.log(web3.utils.isHex(tokenBytecode));
+//console.log(tokenBytecode);
 
 let accounts;
 let EchToken;
 
 beforeEach(async () => {
   accounts = await web3.eth.getAccounts();
-  console.log(accounts);
+  //console.log(accounts);
 
   EchToken = await new web3.eth.Contract(tokenInterface)
     .deploy({ data: tokenBytecode
@@ -47,6 +47,59 @@ describe('EchToken', () => {
     assert.ok(EchToken.options.address);
   });
   
+  it('can mint tokens', async () => {
+    await EchToken.methods.mint(accounts[2],1000).send({from: accounts[0]});
+    const n_tokens = await EchToken.methods.balanceOf(accounts[2]).call();
+    assert.equal(n_tokens, 1000);
+    
+  });
+
+  it('Only owner can mint', async () => {
+    let canMint = false;
+    try{
+    canMint = await EchToken.methods.mint(accounts[2],1000).send({from: accounts[1]});
+    }
+    catch(err){
+    assert.equal(canMint,false);
+    }
+  });
+
+  it('change owner', async () => {
+    const oldOwner = await EchToken.methods.owner().call();
+
+    await EchToken.methods.transferOwnership(accounts[2]).send({from: accounts[0]});
+    const newOwner = await EchToken.methods.owner().call();
+
+    assert.equal(oldOwner, accounts[0]);
+    assert.equal(newOwner, accounts[2]);
+    
+  });
+
+  it('Total suply correct', async () => {
+    await EchToken.methods.mint(accounts[2],1000).send({from: accounts[0]});
+    const n_tokens = await EchToken.methods.totalSupply().call();
+    assert.equal(n_tokens, 1000);
+    
+  });  
+
+  it('transfer user to user', async () => {
+    //mint 1000 tokens for user 2
+    await EchToken.methods.mint(accounts[2],1000).send({from: accounts[0]});
+    let n_tokens_1 = await EchToken.methods.balanceOf(accounts[1]).call();
+    let n_tokens_2 = await EchToken.methods.balanceOf(accounts[2]).call();
+    assert.equal(n_tokens_1, 0);
+    assert.equal(n_tokens_2, 1000);
+
+    await EchToken.methods.transfer(accounts[1], 500).send({from: accounts[2]});
+    n_tokens_1 = await EchToken.methods.balanceOf(accounts[1]).call();
+    n_tokens_2 = await EchToken.methods.balanceOf(accounts[2]).call();
+    assert.equal(n_tokens_1, 500);
+    assert.equal(n_tokens_2, 500);    
+
+    
+  });
+
+
 });     
 /*
 * example code 

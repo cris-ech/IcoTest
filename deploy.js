@@ -2,7 +2,7 @@ const HDWalletProvider = require('truffle-hdwallet-provider');
 const Web3 = require('web3');
 const contractname = require('./build/'); //fix after 
 
-const provider = new HDWalletProvider( "nemonico" , 
+const provider = new HDWalletProvider( "mnemonic" , 
 	"infura key"
 ); //fix after
 const web3 = new Web3(provider);
